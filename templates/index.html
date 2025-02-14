@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리동네 비밀의 한옥</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+    <style>
+        *{
+            font-family: "Sunflower", serif;
+            font-weight: 700;
+            font-style: normal;
+            cursor:url('static/images/cursor.png')2 2, auto;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /*왼쪽 정렬*/
+            align-items: flex-start; /*왼쪽 정렬*/
+            height: 100vh;
+            background-color: #ffffff;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+            gap: 20px;
+            padding: 40px;
+        }
+        .right-container{
+            width: 440px;
+        }
+        .header {
+            width: 100%;
+            height: 200px;
+            background-color:#ffffff;
+        }
+        .video-container {
+            position: relative;
+            width: 440px;
+            align-items: flex-start;
+            /* padding: 12px; */
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+            border-radius: 16px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transform: scaleX(1);
+        }
+        .gesture-info {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            font-weight: bold;
+            width: 1600px;
+        }
+        .info-container {
+            display: grid;
+            width: 95%;
+            text-align: left;
+            font-size: 18px;
+            line-height: 30px;
+            color: black;
+            padding: 14px;
+        }
+        .artist-info{
+            display: flex;
+            flex-direction: column;
+            background-color:rgba(145,226,193,0.6);
+            border-radius:16px;
+            text-align: left;
+            font-weight: bold;
+            line-height:40px;
+            width: 300px;
+            height:90%;
+            padding:50px;
+        }
+        .menu-container {
+            display: grid;
+            text-align: center;
+            background-color: white;
+            margin-top:10px;
+        }
+        .menu-button {
+            width: 420px;
+            height: 70px;
+            border: none;
+            background-color: transparent;
+            color: black;
+            font-size: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            display: flex; align-items: center;
+            border-top: 4px solid black;  /* 위 테두리 */
+        }
+        .menu-button:hover {
+            background-color: #FFF292; /* 호버 시 텍스트 색상 변경 */
+            cursor:url('static/images/cursor.png')2 2, auto;
+        }
+        #gesture-image {
+            width: 100%;
+            height: 900px;
+            object-fit: cover;
+            align-items: flex-start;
+            background-color: white;
+            border-radius: 16px;
+        }
+        #gesture-result {
+            text-align: center;
+            font-size: 24px;
+            color: black;
+        }
+        #gesture-subtitle {
+            font-size: 32px;
+            width: 100%;
+            font-weight: bold;
+            line-height: 55px;
+            color: black;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #header-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <img id="header-image" src="static/images/header.png">
+    </header>
+    <div class="container">
+        <!-- 📌 왼쪽: 웹캠과 메뉴 -->
+        <div class="right-container">
+            <div class="video-container">
+                <video id="video" autoplay></video>
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="info-container">
+                2024년 5060 융복합 창작 & 쉼 프로젝트 '우리동네 비밀의 한옥'에 모인 참여자들은 동작을 인식하는
+                인공지능에 대해 알아보고, 나의 손에 담긴 이야기를 꺼내 인터렉티브 작품을 창작했습니다. 화면에 손을 비춰 원하는 이야기를 들어보세요!
+            </div>
+            <div class="menu-container">
+                <button class="menu-button">민별</button>
+                <button class="menu-button">백준기</button>
+                <button class="menu-button">양순열</button>
+                <button class="menu-button">유림</button>
+                <button class="menu-button">윤희정</button>
+                <button class="menu-button">주은희</button>
+                <button class="menu-button">하재구</button>
+                <button class="menu-button" style="border-bottom: 4px solid black;">허나윤</button>
+                <img style="margin-top:50px;" src="static/images/logo.png">
+            </div>
+        </div>
+
+        <!-- 📌 오른쪽: 제스처 정보 -->
+        <div class="gesture-info">
+                <img id="gesture-image" src="" alt="제스처 이미지">
+                <p id="gesture-subtitle"></p>
+                <p id="gesture-result"></p>
+        </div>
+
+        <div class="artist-info">
+            <p style="font-size: 30px;">통증과 함께 하는 삶</p>
+            <p style="font-size: 22px;">
+                <span style = "background-color: #FFF292;">ㆍ만든 이</span> <br>
+                <span>세상에 무해한 존재가 되길 <br>바라는 사람</span><br><br>
+                <span style = "background-color: #FFF292;">ㆍ작품을 통해 전달되었으면 <br> 하는 메세지가 있다면?</span> <br>
+                불현듯 찾아온 통증이 <br>삶을 지배한다면<br><br>
+                <span style = "background-color: #FFF292;">ㆍ한마디</span> <br>
+                이를 악물고 손을 꽉 쥐지 말고<br> 릴렉스, 그래야 길게 살아진다 
+            </p>
+        </div>
+    </div>  
+
+    <script>
+        const socket = io.connect("http://127.0.0.1:5000");
+        let isPlaying = false;  // 음성 재생 여부 확인
+
+        function playAudio(audioSrc) {
+            if (isPlaying) return; // 음성이 이미 재생 중이면 무시
+
+            isPlaying = true;
+            let audio = new Audio(audioSrc);
+            audio.play();
+
+            audio.onended = function() {
+                isPlaying = false;  // 음성이 끝나면 다시 감지 시작
+            };
+        }
+
+        socket.on('gesture_result', function(data) {
+            document.getElementById("gesture-result").textContent = `${data.gesture}`;
+            document.getElementById("gesture-subtitle").textContent = data.subtitle;
+            document.getElementById("gesture-image").src = data.image_url || "";
+
+            if (data.sound) {
+                playAudio(data.sound);
+            }
+        });
+
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const resultText = document.getElementById("gesture-result");
+        const subtitleText = document.getElementById("gesture-subtitle");
+        const gestureImage = document.getElementById("gesture-image");
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("웹캠을 불러올 수 없습니다.", err);
+            });
+
+        function sendFrame() {
+            const tempCanvas = document.createElement("canvas");
+            tempCanvas.width = video.videoWidth;
+            tempCanvas.height = video.videoHeight;
+            const tempCtx = tempCanvas.getContext("2d");
+            tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            const imageData = tempCanvas.toDataURL("image/jpeg");
+            socket.emit("video_frame", imageData);
+        }
+
+        socket.on("hand_landmarks", (data) => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1,1);
+
+            data.landmarks.forEach(hand => {
+                ctx.beginPath();
+                hand.forEach((point, index) => {
+                    const x = point.x * canvas.width;
+                    const y = point.y * canvas.height;
+                    ctx.fillStyle = "red";
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            });
+
+            ctx.restore();
+        });
+
+        socket.on('gesture_result', function(data) {
+            if(!isPlaying) {
+                document.getElementById("gesture-result").textContent = `${data.gesture}`;
+                document.getElementById("gesture-subtitle").innerHTML = data.subtitle;
+                document.getElementById("gesture-image").src = data.image_url || "";
+            }
+
+
+            if (data.sound) {
+                playAudio(data.sound);
+            }
+        });
+
+        setInterval(sendFrame, 100);
+    </script>
+</body>
+</html>

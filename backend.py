@@ -64,18 +64,24 @@ last_prediction = None #마지막으로 출력된 동작 저장
 def index():
     return render_template("index.html")
 
-cap = cv2.VideoCapture(0)
-
 @socketio.on("video_frame")
 def handle_frame(data):
     global is_playing, last_prediction
+    print("프레임 수신")
     
     frame_data = base64.b64decode(data.split(",")[1])
     np_arr = np.frombuffer(frame_data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
+    print("프레임 디코딩 완료:", frame.shape if frame is not None else "None")
+    
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = hands.process(frame)
+
+    if not results.multi_hand_landmarks:
+        print("손 인식 실패")
+        return
+
+    print("손 인식 성공")
 
     landmarks_list = []
     prediction = "알 수 없음"

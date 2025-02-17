@@ -6,7 +6,6 @@ import os
 import requests
 import base64
 import time
-import pygame
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
@@ -53,28 +52,13 @@ gesture_images = {
 }
 
 gesture_sounds = {
-    "gesture_1": os.path.join(BASE_DIR, "static/sounds/gesture1.mp3"),
-    "gesture_2": os.path.join(BASE_DIR, "static/sounds/gesture2.mp3"),
-    "gesture_3": os.path.join(BASE_DIR, "static/sounds/gesture3.mp3"),
+    "gesture_1": "/static/sounds/gesture1.mp3",
+    "gesture_2": "/static/sounds/gesture2.mp3",
+    "gesture_3": "/static/sounds/gesture3.mp3",
 }
 
 is_playing = False
 last_prediction = None #마지막으로 출력된 동작 저장
-pygame.mixer.init()
-
-def play_sound(sound_path):
-    global is_playing
-    if is_playing:
-        return
-    
-    is_playing = True
-    pygame.mixer.music.load(sound_path)
-    pygame.mixer.music.play()
-
-    while pygame.mixer.music.get_busy():
-        time.sleep(0.1)
-
-    is_playing = False
 
 @app.route("/")
 def index():
@@ -111,6 +95,9 @@ def handle_frame(data):
     # 마커(손 위치)는 항상 업데이트
     emit("hand_landmarks", {"landmarks":landmarks_list})
 
+
+    sound_url = gesture_sounds.get(prediction, "")
+
     #같은 제스쳐가 반복되면 이미지/텍스트/음성 갱신 x
     if not is_playing and prediction != last_prediction and prediction in GESTURE_TEXTS:
         last_prediction = prediction #마지막 출력된 동작 저장
@@ -123,13 +110,12 @@ def handle_frame(data):
             "gesture": gesture_text,
             "subtitle": gesture_subtitle,
             "image_url":image_url,
-            "sound": gesture_sounds.get(prediction, "")
+            "sound": sound_url
         })
- 
-        # ✅ 손동작이 감지되면 음성 파일 경로를 클라이언트로 전달
-        if prediction in gesture_sounds and not is_playing:
-            sound_path = gesture_sounds[prediction]
-            play_sound(sound_path)
+
+        # 일정 시간 후 음성이 끝났다고 가정하고 상태 초기화
+        socketio.sleep(2)  # 💡 음성 길이에 맞게 조정 가능
+        is_playing = False  # 음성이 끝나면 다시 업데이트 허용
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

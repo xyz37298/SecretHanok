@@ -192,6 +192,7 @@
     <script>
         const socket = io.connect("http://127.0.0.1:5000");
         let isPlaying = false;  // 음성 재생 여부 확인
+        let lastGestureData = null;
 
         function playAudio(audioSrc) {
             if (isPlaying) return; // 음성이 이미 재생 중이면 무시
@@ -202,25 +203,37 @@
 
             audio.onended = function() {
                 isPlaying = false;  // 음성이 끝나면 다시 감지 시작
+
+                if(lastGestureData) {
+                    updateUI(lastGestureData); //음성이 끝난 후 UI 업데이트
+
+                    if(lastGetureData.sound){
+                        playAudio(lastGestureData.sound); //새로운 손동작이 있다면 새로운 음성 재생
+                    }
+                }
             };
         }
 
-        socket.on('gesture_result', function(data) {
+        function updateUI(data) {
             document.getElementById("gesture-result").textContent = `${data.gesture}`;
-            document.getElementById("gesture-subtitle").textContent = data.subtitle;
+            document.getElementById("gesture-subtitle").innerHTML = data.subtitle;
             document.getElementById("gesture-image").src = data.image_url || "";
+        }
 
-            if (data.sound) {
-                playAudio(data.sound);
-            }
-        });
+        socket.on('gesture_result', function(data) {        
+        if (!isPlaying) {
+            updateUI(data);  // ✅ 음성이 재생 중이 아닐 때만 UI 업데이트
+            playAudio(data.sound); //바로 음성 재생
+        }
+
+        if (data.sound) {
+            playAudio(data.sound);
+        }
+    });
 
         const video = document.getElementById("video");
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        const resultText = document.getElementById("gesture-result");
-        const subtitleText = document.getElementById("gesture-subtitle");
-        const gestureImage = document.getElementById("gesture-image");
 
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
@@ -262,19 +275,6 @@
             });
 
             ctx.restore();
-        });
-
-        socket.on('gesture_result', function(data) {
-            if(!isPlaying) {
-                document.getElementById("gesture-result").textContent = `${data.gesture}`;
-                document.getElementById("gesture-subtitle").innerHTML = data.subtitle;
-                document.getElementById("gesture-image").src = data.image_url || "";
-            }
-
-
-            if (data.sound) {
-                playAudio(data.sound);
-            }
         });
 
         setInterval(sendFrame, 100);

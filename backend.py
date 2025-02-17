@@ -7,9 +7,11 @@ import requests
 import base64
 import time
 from flask import Flask, render_template
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+CORS(app)
 socketio = SocketIO(app)
 
 mp_hands = mp.solutions.hands

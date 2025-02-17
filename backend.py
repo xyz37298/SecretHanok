@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import joblib
 import os
+import requests
 import base64
 import time
 import pygame
@@ -21,6 +22,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 모델 파일을 절대 경로로 불러오기
 model_path = os.path.join(BASE_DIR, "hand_gesture_recognition_model.pkl")
+GDRIVE_URL = "https://drive.google.com/uc?export=download&id=1Aq_Q8jRu04al-S2x2ckwW-MWLpT8YXvk"
+
+# 모델이 없으면 다운로드
+if not os.path.exists(model_path):
+    response = requests.get(GDRIVE_URL)
+    with open(model_path, "wb") as f:
+        f.write(response.content)
 
 # 모델 로드
 model = joblib.load(model_path)
@@ -124,4 +132,4 @@ def handle_frame(data):
             play_sound(sound_path)
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=10000, debug=True)
+    socketio.run(app, debug=True)

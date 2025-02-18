@@ -6,6 +6,8 @@ import os
 import requests
 import base64
 import time
+from gevent import monkey
+monkey.patch_all()  # SSL 패치 경고 방지
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -66,8 +68,15 @@ last_prediction = None #마지막으로 출력된 동작 저장
 def index():
     return render_template("index.html")
 
+frame_count=0
+
 @socketio.on("video_frame")
 def handle_frame(data):
+    global frame_count
+    frame_count += 1
+
+    if frmae_count%5 != 0:
+        return
     global is_playing, last_prediction
     print("프레임 수신")
     

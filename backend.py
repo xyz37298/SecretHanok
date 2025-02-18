@@ -12,7 +12,7 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()

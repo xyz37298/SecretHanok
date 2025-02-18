@@ -17,6 +17,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Gunicorn 실행
-CMD ["sh", "-c", "gunicorn --worker-class gevent --bind 0.0.0.0:$PORT backend:app --timeout 180 --log-level debug"]
+ENTRYPOINT ["gunicorn", "--worker-class", "gevent", "--bind", "0.0.0.0:10000", "backend:app", "--timeout", "180", "--log-level", "debug"]
 EXPOSE 8080
 

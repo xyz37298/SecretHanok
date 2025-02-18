@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all()  # SSL 패치 경고 방지
+
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -10,8 +13,7 @@ import time
 import sys
 sys.setrecursionlimit(5000)
 
-from gevent import monkey
-monkey.patch_all()  # SSL 패치 경고 방지
+
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit

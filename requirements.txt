@@ -1,5 +1,6 @@
 tflite-runtime==2.10.0
 eventlet==0.33.0
+dnspython<2.0.0
 gunicorn==20.1.0
 absl-py==2.1.0
 attrs==25.1.0

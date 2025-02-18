@@ -6,6 +6,10 @@ import os
 import requests
 import base64
 import time
+
+import sys
+sys.setrecursionlimit(5000)
+
 from gevent import monkey
 monkey.patch_all()  # SSL 패치 경고 방지
 from flask import Flask, render_template

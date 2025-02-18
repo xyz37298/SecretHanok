@@ -1,3 +1,4 @@
+SHELL ["/bin/bash", "-c"]
 FROM python:3.11-slim
 
 # 필수 패키지 설치 (libGL 포함)
@@ -17,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Gunicorn 실행
-ENTRYPOINT ["gunicorn", "--worker-class", "gevent", "--bind", "0.0.0.0:10000", "backend:app", "--timeout", "180", "--log-level", "debug"]
+CMD ["echo", "Hello from container!"]
+ENTRYPOINT ["gunicorn", "--worker-class", "gevent", "--bind", "0.0.0.0:8080", "backend:app", "--timeout", "180", "--log-level", "debug"]
 EXPOSE 8080
 

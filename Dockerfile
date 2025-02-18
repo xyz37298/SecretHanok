@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Gunicorn 실행
-CMD ["gunicorn", "--worker-class", "gevent", "--bind", "0.0.0.0:${PORT}", "backend:app", "--timeout", "180", "--log-level", "debug"]
+CMD ["gunicorn", "--worker-class", "gevent", "--bind", "0.0.0.0:8080", "backend:app", "--timeout", "180", "--log-level", "debug"]

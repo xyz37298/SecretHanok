@@ -143,4 +143,4 @@ def handle_frame(data):
         is_playing = False  # 음성이 끝나면 다시 업데이트 허용
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)

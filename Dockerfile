@@ -18,3 +18,5 @@ COPY . .
 
 # Gunicorn 실행
 CMD ["sh", "-c", "gunicorn --worker-class gevent --bind 0.0.0.0:$PORT backend:app --timeout 180 --log-level debug"]
+EXPOSE 8080
+

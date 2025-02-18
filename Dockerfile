@@ -1,5 +1,6 @@
-SHELL ["/bin/bash", "-c"]
 FROM python:3.11-slim
+
+SHELL ["/bin/bash", "-c"]
 
 # 필수 패키지 설치 (libGL 포함)
 RUN apt-get update && apt-get install -y \

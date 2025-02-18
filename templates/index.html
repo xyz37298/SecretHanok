@@ -191,8 +191,8 @@
 
     <script>
         const socket = io.connect("https://secrethanok.onrender.com/", {
-            transports: ['websocket'],
-            upgrade: false,
+            transports: ['websocket', 'polling'],
+            upgrade: true,
         });
         let isPlaying = false;  // 음성 재생 여부 확인
         let lastGestureData = null;

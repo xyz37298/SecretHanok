@@ -12,7 +12,7 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
@@ -72,6 +72,10 @@ def handle_frame(data):
     print("프레임 수신")
     
     frame_data = base64.b64decode(data.split(",")[1])
+    print("프레임 데이터 크기:", len(frame_data))
+    if len(frame_data) == 0:
+        print("프레임 데이터가 비어있습니다!")
+        return
     np_arr = np.frombuffer(frame_data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     print("프레임 디코딩 완료:", frame.shape if frame is not None else "None")

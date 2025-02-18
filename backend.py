@@ -17,7 +17,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-CORS(app, resources={r"/*":{origins":"*"}})
+CORS(app, resources={r"/*":{"origins":"*"}})
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=60, ping_interval=25)
 
 mp_hands = mp.solutions.hands

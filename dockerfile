@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # 필수 패키지 설치 (libGL 포함)
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     && apt-get clean
 

@@ -46,6 +46,7 @@ scikit-learn==1.6.1
 scipy==1.13.1
 sentencepiece==0.2.0
 simple-websocket==1.1.0
+websocket-client==1.7.0
 six==1.17.0
 sounddevice==0.5.1
 threadpoolctl==3.5.0

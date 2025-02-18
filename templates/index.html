@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sunflower:wght@300&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
 
     <style>
         *{
@@ -249,7 +249,7 @@
             tempCanvas.height = video.videoHeight;
             const tempCtx = tempCanvas.getContext("2d");
             tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-            const imageData = tempCanvas.toDataURL("image/jpeg");
+            const imageData = tempCanvas.toDataURL("image/png");
             socket.emit("video_frame", imageData);
         }
 

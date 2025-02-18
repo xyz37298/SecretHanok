@@ -1,6 +1,9 @@
 from gevent import monkey
 monkey.patch_all()  # SSL 패치 경고 방지
 
+import sys
+sys.setrecursionlimit(5000)
+
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -9,11 +12,6 @@ import os
 import requests
 import base64
 import time
-
-import sys
-sys.setrecursionlimit(5000)
-
-
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -81,7 +79,7 @@ def handle_frame(data):
     global frame_count
     frame_count += 1
 
-    if frmae_count%5 != 0:
+    if frame_count%5 != 0:
         return
     global is_playing, last_prediction
     print("프레임 수신")

@@ -197,6 +197,10 @@
             pingTimeout: 60000,   // 60초 동안 응답 없으면 연결 해제
             pingInterval: 25000   // 25초마다 ping 보내기
         });
+        const ws = new WebSocket("wss://secrethanok.onrender.com/socket.io/?EIO=4&transport=websocket");
+        ws.onopen = () => console.log("WebSocket 연결 성공!");
+        ws.onerror = (err) => console.error("WebSocket 오류:", err);
+
         let isPlaying = false;  // 음성 재생 여부 확인
         let lastGestureData = null;
 
